@@ -1,0 +1,17 @@
+{
+  "name": "monkey-js",
+  "version": "0.5.0",
+  "description": "a monk.js mock library for testing. Saves data to a local file to check results against",
+  "main": "monkey.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "neilkalman@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "bson-objectid": "^1.1.5",
+    "jsonfile": "^2.4.0",
+    "lodash": "^4.17.4",
+    "q": "^1.4.1"
+  }
+}
