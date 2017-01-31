@@ -21,4 +21,4 @@ Currently, the following functionality works:
 
 [MIT License](LICENSE)
 
-Copyright (c) 2017 Neil Kalman
+Copyright (c) 2017 Neil Kalman <neilkalman@gmail.com>
