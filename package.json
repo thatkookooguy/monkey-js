@@ -13,5 +13,9 @@
     "jsonfile": "^2.4.0",
     "lodash": "^4.17.4",
     "q": "^1.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.14.1",
+    "eslint-plugin-lodash": "^2.3.4"
   }
 }
