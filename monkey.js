@@ -193,44 +193,4 @@ function checkUniqueValidity(object, collection, allUniqueFields) {
   return !foundItems;
 }
 
-var monk = manager('lalala');
-var users = monk.get('users');
-console.log('initial collection', db.users);
-users.index('hello', { unique: true, sparse: true });
-users.insert({ hello: 'world', pizza: true }).then(function() {
-  console.log('success adding first world');
-}, function(err) {
-  console.error(err);
-});
-users.insert({ hello: 'world2', pizza: true }).then(function() {
-  console.log('success adding second world');
-}, function(err) {
-  console.error(err);
-});
-users.insert({ hell: 'tits', ass: false }).then(function() {
-  console.log('success adding tits');
-}, function(err) {
-  console.error(err);
-});
-users.insert({ hello: 'tits', ass: [ 'this' ] }).then(function() {
-  console.log('success adding tits');
-}, function(err) {
-  console.error(err);
-});
-users.find({ ass: false }).then(function(user) {
-  console.log('found our user! yayyy!', user);
-});
-monkey.
-users.update({ hello: 'tits' }, {
-  $addToSet: {
-    ass: {
-      $each: ['is', 'nice!']
-    }
-  }
-}).then(function(data) {
-  console.log('item successfully updated!');
-}, function(err) {
-  console.error(err);
-});
-
 module.exports = manager;
