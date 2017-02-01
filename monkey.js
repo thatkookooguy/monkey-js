@@ -11,7 +11,9 @@ function monkey(uri, options, callback) {
   var self = this;
 
   var monkeyDBFilename = getJsonPath();
-  var monkeyDB = initializeDB();
+  var monkeyDB = {};
+  var headers = {};
+  syncWithFile(monkeyDB);
 
   // if (_.isFunction(callback)) {
   //   // when do you use this? what should this return?
@@ -23,14 +25,6 @@ function monkey(uri, options, callback) {
     create: create,
     get: get
   };
-
-  function initializeDB() {
-    // if (fs.existsSync(monkeyDBFilename)) {
-    //   return require(monkeyDBFilename);
-    // } else {
-    return {};
-    // }
-  }
 
   function getJsonPath() {
     if (options.monkeyDB) {
@@ -45,6 +39,27 @@ function monkey(uri, options, callback) {
 
   function writeFile() {
     jsonfile.writeFileSync(monkeyDBFilename, monkeyDB);
+  }
+
+  function syncWithFile(database) {
+    if (fs.existsSync(monkeyDBFilename)) {
+      try {
+        _.assign(database, jsonfile.readFileSync(monkeyDBFilename));
+      } catch (error) {
+        console.error('json is not parsed correctly. cleaning db');
+        // initialize the file itself
+        jsonfile.writeFileSync(monkeyDBFilename, database);
+      }
+    } else {
+      // create the file
+      jsonfile.writeFileSync(monkeyDBFilename, database);
+    }
+  }
+
+  function getCollection(collectionName) {
+    syncWithFile(monkeyDB);
+
+    return monkeyDB[collectionName];
   }
 
   function close() {
@@ -66,10 +81,10 @@ function monkey(uri, options, callback) {
       writeFile();
     }
 
-    return collection(monkeyDB[collectionName]);
+    return collection(collectionName);
   }
 
-  function collection(collection) {
+  function collection(collectionName) {
     return {
       find: find,
       findOne: findOne,
@@ -80,6 +95,9 @@ function monkey(uri, options, callback) {
 
     function find(query) {
       var deferred = Q.defer();
+
+      var collection = getCollection(collectionName);
+
       var results = _.filter(collection, query);
       deferred.resolve(results);
 
@@ -87,6 +105,8 @@ function monkey(uri, options, callback) {
     }
 
     function index(filedsOrSpecs, options) {
+      var collection = getCollection(collectionName);
+
       if (_.isNil(options) ||
         (!_.isString(filedsOrSpecs) && !_.isObject(filedsOrSpecs))) {
         return;
@@ -97,23 +117,26 @@ function monkey(uri, options, callback) {
         var parsedOptions = _.pick(options, ['unique', 'sparse']);
         filedsOrSpecs[attribute] = parsedOptions;
 
-        if (_.isNil(collection._headers)) {
-          collection._headers = {};
+        if (_.isNil(headers[collectionName])) {
+          headers[collectionName] = {};
         }
 
         _.forEach(filedsOrSpecs, function(value, indexField) {
           var result = {};
           result[indexField] = _.pick(options, ['unique', 'sparse']);
           // add indexes to headers of collection
-          _.assign(collection._headers, result);
+          _.assign(headers[collectionName], result);
         });
       }
 
-      _.forEach(filedsOrSpecs);
+      //_.forEach(filedsOrSpecs);
     }
 
     function findOne(query) {
       var deferred = Q.defer();
+
+      var collection = getCollection(collectionName);
+
       var results = _.find(collection, query);
       deferred.resolve(results);
 
@@ -123,11 +146,13 @@ function monkey(uri, options, callback) {
     function insert(docs) {
       var deferred = Q.defer();
 
-      docs = _.isObject(docs) ? [ docs ] : docs;
+      var collection = getCollection(collectionName);
 
-      if (!_.isEmpty(collection._headers)) {
+      docs = !_.isArray(docs) ? [ docs ] : docs;
+
+      if (!_.isEmpty(headers[collectionName])) {
         var allSparseFields =
-          _.pickBy(_.mapValues(collection._headers, 'sparse'), _.identity);
+          _.pickBy(_.mapValues(headers[collectionName], 'sparse'), _.identity);
 
         var isDocsSparseCorrectly =
           _.every(docs, function(doc) {
@@ -140,7 +165,7 @@ function monkey(uri, options, callback) {
         }
 
         var allUniqueFields =
-          _.pickBy(_.mapValues(collection._headers, 'unique'), _.identity);
+          _.pickBy(_.mapValues(headers[collectionName], 'unique'), _.identity);
 
         var isDocsUniqueValid = _.isEmpty(collection) ? true :
           _.every(docs, function(doc) {
@@ -167,6 +192,8 @@ function monkey(uri, options, callback) {
 
     function update(query, update) {
       var deferred = Q.defer();
+
+      var collection = getCollection(collectionName);
 
       var split = _.partition(collection, query);
 
