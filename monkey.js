@@ -25,11 +25,11 @@ function monkey(uri, options, callback) {
   };
 
   function initializeDB() {
-    if (fs.existsSync(monkeyDBFilename)) {
-      return require(monkeyDBFilename);
-    } else {
-      return {};
-    }
+    // if (fs.existsSync(monkeyDBFilename)) {
+    //   return require(monkeyDBFilename);
+    // } else {
+    return {};
+    // }
   }
 
   function getJsonPath() {
