@@ -4,7 +4,6 @@ var ObjectID = require('bson-objectid');
 var jsonfile = require('jsonfile');
 var path = require('path');
 var fs = require('fs');
-var relativeFixer = '../../';
 jsonfile.spaces = 2;
 
 function monkey(uri, options, callback) {
@@ -39,11 +38,9 @@ function monkey(uri, options, callback) {
         console.error('monkeyDB expects to be a json file');
         return;
       }
-      options.monkeyDB = path.isAbsolute(options.monkeyDB) ?
-           options.monkeyDB : path.join(relativeFixer, options.monkeyDB);
     }
 
-    return options.monkeyDB || path.join(relativeFixer, 'monkeyDB.json');
+    return options.monkeyDB || 'monkeyDB.json';
   }
 
   function writeFile() {
