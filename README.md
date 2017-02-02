@@ -10,7 +10,7 @@ Currently, the following functionality works:
 - database is saved in a `testDB.json`, no matter which url you give `monkey.js`
 - all functions are currently only synchronous. Simulating async use is planned soon
 - Implemented so far:
-  - `var monk = require('monk');` :banana: `var monkey = require('monkey')`
+  - `var monk = require('monk');` :banana: `var monkey = require('monkey-js')`
   - `var db = monk(url);` :banana: `var db = monkey(url);`
   - `monk.get` :banana: `monkey.get`
   - `monk.create` :banana: `monkey.create`
