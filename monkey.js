@@ -105,31 +105,29 @@ function monkey(uri, options, callback) {
     }
 
     function index(filedsOrSpecs, options) {
+      // sync collection
       var collection = getCollection(collectionName);
 
       if (_.isNil(options) ||
         (!_.isString(filedsOrSpecs) && !_.isObject(filedsOrSpecs))) {
         return;
       }
-      if (_.isString(filedsOrSpecs)) {
-        var attribute = filedsOrSpecs;
-        filedsOrSpecs = {};
-        var parsedOptions = _.pick(options, ['unique', 'sparse']);
-        filedsOrSpecs[attribute] = parsedOptions;
+      filedsOrSpecs = _.isString(filedsOrSpecs) ?
+        [ filedsOrSpecs ] : filedsOrSpecs;
 
-        if (_.isNil(headers[collectionName])) {
-          headers[collectionName] = {};
-        }
+      filedsOrSpecs = _.isObject(filedsOrSpecs) ?
+        _.keys(filedsOrSpecs) : filedsOrSpecs;
 
-        _.forEach(filedsOrSpecs, function(value, indexField) {
-          var result = {};
-          result[indexField] = _.pick(options, ['unique', 'sparse']);
-          // add indexes to headers of collection
-          _.assign(headers[collectionName], result);
-        });
+      if (_.isNil(headers[collectionName])) {
+        headers[collectionName] = {};
       }
 
-      //_.forEach(filedsOrSpecs);
+      _.forEach(filedsOrSpecs, function(attribute) {
+        var result = {};
+        result[attribute] = _.pick(options, ['unique', 'sparse']);
+          // add indexes to headers of collection
+        _.assign(headers[collectionName], result);
+      });
     }
 
     function findOne(query) {
