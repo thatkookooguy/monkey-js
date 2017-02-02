@@ -126,7 +126,9 @@ function monkey(uri, options, callback) {
         var result = {};
         result[attribute] = _.pick(options, ['unique', 'sparse']);
           // add indexes to headers of collection
-        _.assign(headers[collectionName], result);
+        if (!_.isEmpty(result[attribute])) {
+          _.assign(headers[collectionName], result);
+        }
       });
     }
 
