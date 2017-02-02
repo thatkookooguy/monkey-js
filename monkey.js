@@ -200,20 +200,30 @@ function monkey(uri, options, callback) {
       _.forEach(split[0], function(itemToUpdate) {
         if (update.$addToSet) {
           var fieldToUpdate = _.keys(update.$addToSet)[0];
-          if (_.isObject(update.$addToSet) &&
-            _.isArray(itemToUpdate[fieldToUpdate])) {
+          if (_.isObject(update.$addToSet)) {
 
-            var finalizedData = _.isArray(update.$addToSet[fieldToUpdate].$each) ?
-              update.$addToSet[fieldToUpdate].$each :
-              [ update.$addToSet[fieldToUpdate] ];
+            if (_.isNil(itemToUpdate[fieldToUpdate])) {
+              itemToUpdate[fieldToUpdate] = [];
+            }
+
+            if (!_.isArray(itemToUpdate[fieldToUpdate])) {
+              deferred.reject([
+                '$addToSet works on array fields. ',
+                fieldToUpdate, ' is a ', typeof itemToUpdate[fieldToUpdate]
+              ].join(''));
+            }
+
+            var finalizedData =
+              _.isArray(update.$addToSet[fieldToUpdate].$each) ?
+                update.$addToSet[fieldToUpdate].$each :
+                [ update.$addToSet[fieldToUpdate] ];
 
             itemToUpdate[fieldToUpdate] =
               _.union(itemToUpdate[fieldToUpdate],
                 finalizedData);
           } else {
             deferred.reject([
-              '$addToSet works on array fields. ',
-              fieldToUpdate, ' is a ', typeof itemToUpdate[fieldToUpdate]
+              '$addToSet should contain an object'
             ].join(''));
           }
 
