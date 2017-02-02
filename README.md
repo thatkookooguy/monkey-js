@@ -16,6 +16,12 @@ Currently, the following functionality works:
   - `monk.create` :banana: `monkey.create`
   - `monk.close` :banana: `monkey.close`
   - `monk.create` :banana: `monkey.create`
+  - `db.index`
+  - `db.insert`
+  - `db.find`
+  - `db.update`
+  
+    > Supports `$addToSet` and `$each` usages
 
 ## License
 
